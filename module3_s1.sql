@@ -1,15 +1,18 @@
-use bai_tap_1;
+create database module3_s1;
+
+use module3_s1 ;
+
 
 create table students(
-	id int,
+	id int not null,
     name varchar(100),
     primary key (id)
 );
 
 create table teachers(
-	id int,
+	id int not null,
     name varchar(100),
-    age int,
+	age int check (age > 0) not null,
     country varchar(100),
     primary key (id)
 );
