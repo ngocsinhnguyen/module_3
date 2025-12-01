@@ -18,7 +18,7 @@ create table teachers(
     primary key (id)
 );
 
-create table class(
+create table classes(
 	id int not null,
     class_name varchar(100),
     primary key(id)
