@@ -1,7 +1,7 @@
-drop database if exists quan_ly_sinh_vien;
+drop database if exists s4_quan_ly_sinh_vien;
 
-create database quan_ly_sinh_vien;
-use quan_ly_sinh_vien;
+create database s4_quan_ly_sinh_vien;
+use s4_quan_ly_sinh_vien;
 
 create table classes
 (
@@ -66,36 +66,28 @@ insert into marks (sub_id, student_id, mark, examtimes)
 		values (1, 1, 8, 1),
 				(1, 2, 10, 2),
 				(2, 1, 12, 1);
-
-
--- Hiển thị tất cả các sinh viên có tên bắt đầu bảng ký tự ‘h’
-select *
-from students
-where student_name like 'h%';
-
--- Hiển thị các thông tin lớp học có thời gian bắt đầu vào tháng 12.
-select *
-from classes
-where month(start_date) = 12;
-
--- Hiển thị tất cả các thông tin môn học có credit trong khoảng từ 3-5.
-select *
+                
+-- Hiển thị tất cả các thông tin môn học (bảng subject) có credit lớn nhất.
+select * 
 from subjects
-where credit between 3 and 5;
+where credit = (select max(credit) from subjects);
 
--- Thay đổi mã lớp(ClassID) của sinh viên có tên ‘Hung’ là 2.
-set sql_safe_updates = 0;
-update students
-set class_id = 2
-where student_name = 'hung';
-set sql_safe_updates = 1;
+-- Hiển thị các thông tin môn học có điểm thi lớn nhất.
+select s.*
+from subjects s
+join marks m on s.sub_id = m.sub_id
+where m.mark = (select max(mark) from marks);
 
--- Hiển thị các thông tin: StudentName, SubName, Mark. Dữ liệu sắp xếp theo điểm thi (mark) giảm dần. nếu trùng sắp theo tên tăng dần.
-select 
-    s.student_name, 
-    sub.sub_name, 
-    m.mark
-from marks m
-join students s on m.student_id = s.student_id
-join subjects sub on m.sub_id = sub.sub_id
-order by m.mark desc, s.student_name asc;
+-- Hiển thị các thông tin sinh viên và điểm trung bình của mỗi sinh viên, xếp hạng theo thứ tự điểm giảm dần
+select
+    ss.student_id,
+    ss.student_name,
+    ss.address,
+    ss.phone,
+    ss.status,
+    ss.class_id,
+    avg(m.mark) AS avg_mark
+from students ss
+left join marks m on ss.student_id = m.student_id
+group by ss.student_id, ss.student_name, ss.address, ss.phone, ss.status, ss.class_id
+order by avg_mark desc;
