@@ -76,7 +76,7 @@ CREATE TABLE dna_locus_results (
 );
 
 -- ==============================
--- TABLE: comparison_results
+-- Bảng kết quả so sánh tổng hợp
 -- ==============================
 CREATE TABLE comparison_results (
     comparison_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,6 +84,7 @@ CREATE TABLE comparison_results (
     sample_2 INT NOT NULL,
     matched_locus INT NOT NULL,
     similarity_percent FLOAT NOT NULL,
+    paternity_index DECIMAL(10,4) NOT NULL,  -- CPI tổng hợp
     relationship VARCHAR(50),
     compared_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (sample_1) REFERENCES dna_samples(sample_id)
@@ -114,6 +115,16 @@ SELECT
 FROM dna_samples s
 JOIN dna_locus_results r ON s.sample_id = r.sample_id
 JOIN locus l ON r.locus_id = l.locus_id;
+
+-- Bảng chi tiết PI cho từng locus
+CREATE TABLE comparison_locus_results (
+    comparison_id INT NOT NULL,
+    locus_id INT NOT NULL,
+    pi_value DECIMAL(10,4) NOT NULL,
+    PRIMARY KEY (comparison_id, locus_id),
+    FOREIGN KEY (comparison_id) REFERENCES comparison_results(comparison_id) ON DELETE CASCADE,
+    FOREIGN KEY (locus_id) REFERENCES locus(locus_id)
+);
 
 -- User mẫu
 INSERT INTO users (full_name, email, password)
